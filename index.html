@@ -15,6 +15,8 @@
             --highlight-bg: #f0f0f0;
             --playlist-badge-bg: #e5e5e5;
             --btn-bg: #f2f2f2;
+            --menu-bg: #ffffff;
+            --menu-text: #333;
         }
 
         body {
@@ -41,22 +43,47 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; align-items: center;
         }
-        h1 { font-size: 1.5rem; color: #333; margin: 0 0 15px 0; }
+        
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; position: relative; margin-bottom: 15px;
+        }
+
+        .title-area {
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        h1 { font-size: 1.5rem; color: #333; margin: 0; }
+
+        .reset-all-btn {
+            background: var(--btn-bg); border: 1px solid #ddd;
+            border-radius: 4px; padding: 4px 8px;
+            font-size: 0.8rem; cursor: pointer; color: #555;
+            display: flex; align-items: center; gap: 4px;
+            transition: 0.2s;
+        }
+        .reset-all-btn:hover { background: #e0e0e0; color: #000; }
+        .reset-all-btn:active { transform: scale(0.95); }
+
+        .menu-btn {
+            background: none; border: none; cursor: pointer; padding: 5px;
+            display: flex; flex-direction: column; justify-content: space-around;
+            width: 30px; height: 30px; z-index: 1001;
+        }
+        .menu-btn span {
+            width: 100%; height: 3px; background-color: #333; border-radius: 2px;
+        }
 
         .search-container {
             width: 100%; max-width: 800px;
             display: flex; flex-direction: column; gap: 10px;
         }
         @media (min-width: 600px) { .search-container { flex-direction: row; } }
-
+        
         .input-wrapper { 
-            position: relative; 
-            width: 100%; 
-            z-index: 1; 
+            position: relative; width: 100%; z-index: 1;
         }
-        .input-wrapper:focus-within {
-            z-index: 10000; 
-        }
+        .input-wrapper:focus-within { z-index: 10000; }
         
         input[type="text"], input[type="search"] {
             width: 100%; padding: 12px 50px 12px 20px;
@@ -67,9 +94,7 @@
         }
         input:focus { outline: none; border-color: #1c62b9; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
 
-        input[type="search"]::-webkit-search-cancel-button {
-            -webkit-appearance: none; appearance: none; display: none;
-        }
+        input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
 
         .clear-btn {
             position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
@@ -101,12 +126,56 @@
         .suggestion-item:hover { background-color: var(--highlight-bg); }
         .icon { margin-right: 8px; color: var(--text-sub); }
 
+        .side-menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 20000;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .side-menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .side-menu {
+            position: absolute; top: 0; right: -300px; width: 280px; height: 100%;
+            background: var(--menu-bg); box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: right 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .side-menu-overlay.open .side-menu { right: 0; }
+
+        .menu-header {
+            padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+        }
+        .menu-title { font-weight: bold; font-size: 1.1rem; }
+        .close-menu-btn { font-size: 24px; background: none; border: none; cursor: pointer; padding: 0 10px; }
+
+        .menu-list { list-style: none; padding: 0; margin: 0; }
+        .menu-list li { border-bottom: 1px solid #f5f5f5; }
+        .menu-item {
+            display: block; width: 100%; padding: 15px 20px; text-align: left;
+            background: none; border: none; font-size: 1rem; color: var(--menu-text);
+            cursor: pointer; text-decoration: none; box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .menu-item:hover { background-color: #f9f9f9; }
+        .menu-version { font-size: 0.8rem; color: #888; }
+
+        .history-content {
+            display: none; background: #fdfdfd; padding: 0; border-top: 1px solid #eee;
+        }
+        .history-content.show { display: block; }
+        .history-item {
+            padding: 12px 20px; border-bottom: 1px solid #eee; font-size: 0.9rem; line-height: 1.5;
+        }
+        .ver-badge {
+            display: inline-block; background: #333; color: #fff; 
+            font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-right: 5px;
+        }
+        .ver-desc { display: block; color: #555; margin-top: 4px; font-size: 0.85rem; }
+
         .status-bar { max-width: 1200px; margin: 10px auto 0; padding: 0 20px; text-align: right; font-size: 0.9rem; color: var(--text-sub); }
         .video-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
-        
         .video-card {
             background: var(--card-bg); border-radius: 12px; overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
@@ -128,12 +197,12 @@
         }
         .url-text { font-size: 0.75rem; color: var(--text-sub); display: flex; justify-content: flex-end; align-items: center; gap: 5px; }
 
-        #detailPage {
+        .sub-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 2000; overflow-y: auto;
             display: none; flex-direction: column;
         }
-        .detail-header {
+        .sub-header {
             padding: 10px 20px; background: #fff; border-bottom: 1px solid #eee;
             position: sticky; top: 0; z-index: 100; display: flex; align-items: center; height: 50px;
         }
@@ -151,7 +220,6 @@
         }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .detail-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
-
         .action-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .action-btn {
             display: flex; align-items: center; gap: 6px;
@@ -163,7 +231,6 @@
         .action-btn svg { width: 18px; height: 18px; fill: currentColor; }
         .action-btn.primary { background-color: #333; color: #fff; }
         .action-btn.primary:hover { background-color: var(--primary-color); }
-
         .detail-meta { padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
         .detail-row { margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; font-size: 0.95rem; }
         .label { font-weight: bold; color: #666; width: 100px; flex-shrink: 0; }
@@ -172,6 +239,19 @@
         .value a:hover { text-decoration: underline; }
         .ext-link { font-size: 0.85em; color: #666; margin-left: 5px; }
 
+        .report-content {
+            padding: 30px 20px; max-width: 600px; margin: 0 auto; text-align: center;
+        }
+        .report-icon { font-size: 4rem; margin-bottom: 20px; display: block; }
+        .report-desc { text-align: left; line-height: 1.6; margin-bottom: 30px; color: #444; }
+        .google-form-btn {
+            display: inline-block; background-color: #673ab7; color: #fff;
+            padding: 12px 24px; border-radius: 8px; text-decoration: none;
+            font-weight: bold; box-shadow: 0 4px 6px rgba(103, 58, 183, 0.3);
+            transition: 0.2s;
+        }
+        .google-form-btn:hover { background-color: #5e35b1; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(103, 58, 183, 0.4); }
+
         #copyToast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
@@ -179,7 +259,6 @@
             opacity: 0; transition: opacity 0.3s; pointer-events: none;
         }
         #copyToast.show { opacity: 1; }
-
         .loading, .no-result { text-align: center; margin-top: 50px; color: var(--text-sub); width: 100%; }
         .spinner {
             border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-color);
@@ -187,7 +266,6 @@
             animation: spin 1s linear infinite; margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         #scrollSentinel { height: 50px; width: 100%; }
     </style>
 </head>
@@ -200,9 +278,88 @@
 </div>
 <div id="copyToast">URLをコピーしました</div>
 
+<div id="aboutModal" class="side-menu-overlay" style="z-index: 30000; display:flex; align-items:center; justify-content:center;">
+    <div style="background:#fff; width:90%; max-width:500px; max-height:80vh; border-radius:12px; padding:20px; overflow-y:auto; position:relative; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <button id="closeAboutBtn" style="position:absolute; right:15px; top:15px; background:none; border:none; font-size:24px; cursor:pointer;">×</button>
+        <h3 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">このサイトについて</h3>
+        <div style="font-size:0.95rem; line-height:1.6; color:#444;">
+            <p><strong>📺 スポチャン動画検索 (Unofficial)</strong></p>
+            <p>YouTubeの「スポーツチャンバラ」公式チャンネルの動画を、タイトルや再生リストから高速に検索・視聴できる非公式ファンサイトです。</p>
+            
+            <p><strong>🔍 使い方</strong></p>
+            <ul style="padding-left:20px; margin:10px 0;">
+                <li><strong>上の窓：</strong>動画タイトルで検索できます（例：「大会」「決勝」）。</li>
+                <li><strong>下の窓：</strong>再生リスト（大会名など）で絞り込めます。</li>
+                <li><strong>リセット：</strong>ヘッダーの「🔄」を押すと条件をクリアします。</li>
+            </ul>
+
+            <p style="font-size:0.85rem; background:#f0f0f0; padding:10px; border-radius:6px;">
+                ※本サイトは有志による運営であり、(公社)日本スポーツチャンバラ協会とは無関係です。<br>
+                ※動画の著作権は元のチャンネル主に帰属します。
+            </p>
+        </div>
+    </div>
+</div>
+
+<div id="sideMenuOverlay" class="side-menu-overlay">
+    <div class="side-menu">
+        <div class="menu-header">
+            <span class="menu-title">MENU</span>
+            <button id="closeMenuBtn" class="close-menu-btn">×</button>
+        </div>
+        <ul class="menu-list">
+            <li>
+                <button class="menu-item" id="toggleHistoryBtn">
+                    <span>更新履歴</span>
+                    <span class="menu-version" id="currentVerDisplay">Ver 1.12</span>
+                </button>
+                <div id="historyContent" class="history-content">
+                    </div>
+            </li>
+            <li>
+                <button class="menu-item" id="aboutBtn">
+                    <span>使い方・このサイトについて</span>
+                    <span class="icon">ℹ️</span>
+                </button>
+            </li>
+            <li>
+                <a href="https://www.youtube.com/@sports-chanbara" target="_blank" class="menu-item">
+                    <span>YouTube公式チャンネル</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+            </li>
+            <li>
+                <button class="menu-item" id="bugReportNavBtn">
+                    <span>バグ・不具合報告</span>
+                    <span class="icon">🐛</span>
+                </button>
+            </li>
+            <li>
+                <button class="menu-item" onclick="clearAllHistory()">
+                    <span>検索履歴を削除</span>
+                </button>
+            </li>
+        </ul>
+        <div style="padding:20px; font-size:0.8rem; color:#999; text-align:center; margin-top:auto;">
+            Unofficial Video Library<br>Ver 1.12
+        </div>
+    </div>
+</div>
+
 <div id="mainView">
     <header>
-        <h1>スポチャン動画検索</h1>
+        <div class="header-top">
+            <div class="title-area">
+                <h1>スポチャン動画検索</h1>
+                <button id="resetAllBtn" class="reset-all-btn" title="検索条件をリセット">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    リセット
+                </button>
+            </div>
+            <button id="hamburgerBtn" class="menu-btn" aria-label="メニューを開く">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
         <div class="search-container">
             <div class="input-wrapper">
                 <input type="search" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off" name="search_q_uniq" enterkeyhint="search">
@@ -230,8 +387,8 @@
     <p class="no-result hidden" id="noResult">条件に一致する動画が見つかりませんでした。</p>
 </div>
 
-<div id="detailPage">
-    <div class="detail-header">
+<div id="detailPage" class="sub-page">
+    <div class="sub-header">
         <button class="back-btn" onclick="goBack()">
             <svg class="back-icon" viewBox="0 0 24 24">
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
@@ -267,6 +424,29 @@
     </div>
 </div>
 
+<div id="bugReportPage" class="sub-page">
+    <div class="sub-header">
+        <button class="back-btn" onclick="closeBugReport()">
+            <svg class="back-icon" viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            <span>メニューに戻る</span>
+        </button>
+    </div>
+    <div class="report-content">
+        <span class="report-icon">🐛</span>
+        <h2>バグ・不具合報告</h2>
+        <div class="report-desc">
+            <p>サイトのご利用ありがとうございます。<br>検索ができない、表示が崩れているなどの不具合を見つけた場合は、以下のフォームよりご報告いただけますと幸いです。</p>
+            <p>※機能の追加要望などもこちらで受け付けています。</p>
+        </div>
+        
+        <a href="https://forms.gle/6WXyEwApDyo58Bcn9" target="_blank" class="google-form-btn">
+            Googleフォームで報告する ↗
+        </a>
+    </div>
+</div>
+
 <script>
     const LIST_URL = "https://raw.githubusercontent.com/mokumokukairo/my-video-list/main/list.txt";
 
@@ -289,18 +469,18 @@
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
     const suggestionsBox = document.getElementById('suggestionsBox');
-
     const playlistInput = document.getElementById('playlistSearchInput');
     const clearPlaylistBtn = document.getElementById('clearPlaylist');
     const playlistSuggestionsBox = document.getElementById('playlistSuggestionsBox');
-
     const videoGrid = document.getElementById('videoGrid');
     const loadingArea = document.getElementById('loadingArea');
     const statusBar = document.getElementById('statusBar');
     const scrollSentinel = document.getElementById('scrollSentinel');
     
     const detailPage = document.getElementById('detailPage');
+    const bugReportPage = document.getElementById('bugReportPage');
     const mainView = document.getElementById('mainView');
+    
     const detailEmbed = document.getElementById('detailEmbed');
     const detailTitle = document.getElementById('detailTitle');
     const detailUrl = document.getElementById('detailUrl');
@@ -308,12 +488,94 @@
     const filterByPlaylistBtn = document.getElementById('filterByPlaylistBtn');
     const copyToast = document.getElementById('copyToast');
 
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sideMenuOverlay = document.getElementById('sideMenuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+    const historyContent = document.getElementById('historyContent');
+    const resetAllBtn = document.getElementById('resetAllBtn');
+    
+    const bugReportNavBtn = document.getElementById('bugReportNavBtn');
+
     let allVideoData = []; 
     let currentFilteredData = [];
     let uniquePlaylists = [];
     let displayedCount = 0; 
     const BATCH_SIZE = 40; 
     const HISTORY_KEY = 'spchan_search_history';
+
+    const updateHistory = [
+        { ver: "1.12", desc: "リセットボタンの実装、バグ報告ページの追加, 軽微なバグの修正" },
+        { ver: "1.11", desc: "ハンバーガーメニュー、更新履歴、機能リンクの実装, 軽微なバグの修正" },
+        { ver: "1.10", desc: "自動更新時刻を日本時間の0:00に変更, 軽微なバグの修正" },
+        { ver: "1.09", desc: "スマホでの検索窓重なり不具合の修正" },
+        { ver: "1.08", desc: "検索クリアボタンの大型化と操作性向上, 軽微なバグの修正" },
+        { ver: "1.07", desc: "検索窓のデザイン修正, 軽微なバグの修正" },
+        { ver: "1.06", desc: "スマホ入力最適化と履歴保存ロジック変更" },
+        { ver: "1.05", desc: "検索履歴機能の実装, 軽微なバグの修正" },
+        { ver: "1.04", desc: "開発フロー案内の確立" },
+        { ver: "1.03", desc: "全動画とプレイリストの統合取得、重複処理ロジック追加" },
+        { ver: "1.02", desc: "無限スクロール実装、Enterキー挙動修正、未分類動画取得漏れ修正, 軽微なバグの修正" },
+        { ver: "1.01", desc: "サイト軽量化対応, 軽微なバグの修正" }
+    ];
+
+    function initMenu() {
+        historyContent.innerHTML = updateHistory.map(h => `
+            <div class="history-item">
+                <span class="ver-badge">Ver ${h.ver}</span>
+                <span class="ver-desc">${h.desc}</span>
+            </div>
+        `).join('');
+
+        hamburgerBtn.addEventListener('click', () => sideMenuOverlay.classList.add('open'));
+        closeMenuBtn.addEventListener('click', () => sideMenuOverlay.classList.remove('open'));
+        sideMenuOverlay.addEventListener('click', (e) => {
+            if (e.target === sideMenuOverlay) sideMenuOverlay.classList.remove('open');
+        });
+
+        toggleHistoryBtn.addEventListener('click', () => {
+            historyContent.classList.toggle('show');
+        });
+
+        bugReportNavBtn.addEventListener('click', () => {
+            sideMenuOverlay.classList.remove('open');
+            openBugReport();
+        });
+    }
+
+    function clearAllHistory() {
+        if(confirm("保存されている検索履歴をすべて削除しますか？")) {
+            localStorage.removeItem(HISTORY_KEY);
+            alert("履歴を削除しました。");
+            sideMenuOverlay.classList.remove('open');
+        }
+    }
+
+    const aboutBtn = document.getElementById('aboutBtn');
+    const aboutModal = document.getElementById('aboutModal');
+    const closeAboutBtn = document.getElementById('closeAboutBtn');
+
+    aboutModal.style.display = 'none';
+
+    aboutBtn.addEventListener('click', () => {
+        aboutModal.style.display = 'flex';
+        setTimeout(() => aboutModal.classList.add('open'), 10);
+        sideMenuOverlay.classList.remove('open');
+    });
+
+    closeAboutBtn.addEventListener('click', () => {
+        aboutModal.classList.remove('open');
+        setTimeout(() => aboutModal.style.display = 'none', 300);
+    });
+
+    aboutModal.addEventListener('click', (e) => {
+        if (e.target === aboutModal) {
+            aboutModal.classList.remove('open');
+            setTimeout(() => aboutModal.style.display = 'none', 300);
+        }
+    });
+
+    initMenu();
 
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
@@ -324,6 +586,8 @@
     window.addEventListener('popstate', (event) => {
         if (detailPage.style.display === 'flex') {
             closeDetail(false);
+        } else if (bugReportPage.style.display === 'flex') {
+            closeBugReport(false);
         }
     });
 
@@ -498,6 +762,20 @@
         mainView.style.display = 'block';
     }
 
+    function openBugReport() {
+        history.pushState({ page: 'bugreport' }, '', '#bugreport');
+        mainView.style.display = 'none';
+        bugReportPage.style.display = 'flex';
+        window.scrollTo(0, 0);
+    }
+
+    function closeBugReport(shouldBackHistory = true) {
+        if(shouldBackHistory) history.back();
+        bugReportPage.style.display = 'none';
+        mainView.style.display = 'block';
+    }
+
+
     function copyVideoUrl() {
         navigator.clipboard.writeText(detailUrl.href).then(() => {
             copyToast.classList.add('show');
@@ -628,6 +906,16 @@
         applyFilters(true);
     }
 
+    resetAllBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        playlistInput.value = '';
+        updateClearBtn(searchInput, clearSearchBtn);
+        updateClearBtn(playlistInput, clearPlaylistBtn);
+        hideSuggestionsBox(suggestionsBox, searchInput);
+        hideSuggestionsBox(playlistSuggestionsBox, playlistInput);
+        applyFilters(true);
+    });
+
     searchInput.addEventListener('focus', () => updateTitleSuggestions(searchInput.value));
     searchInput.addEventListener('click', () => updateTitleSuggestions(searchInput.value));
     searchInput.addEventListener('input', () => {
@@ -686,5 +974,5 @@
 </script>
 
 </body>
-
+    
 </html>
