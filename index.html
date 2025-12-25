@@ -43,7 +43,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; align-items: center;
         }
-
+        
         .header-top {
             display: flex; justify-content: center; align-items: center;
             width: 100%; position: relative; margin-bottom: 15px; height: 40px;
@@ -68,7 +68,7 @@
             width: 100%; max-width: 800px;
             display: flex; flex-direction: column; gap: 10px;
         }
-
+        
         .search-row {
             display: flex; gap: 8px; width: 100%; align-items: center;
         }
@@ -114,6 +114,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: none; overflow-y: auto; max-height: 50vh;
             margin-top: -1px;
+            z-index: 10001;
         }
         .suggestion-item { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
         .suggestion-item:hover { background-color: var(--highlight-bg); }
@@ -154,9 +155,9 @@
 
         .menu-list { list-style: none; padding: 0; margin: 0; }
         .menu-list li { border-bottom: 1px solid #f5f5f5; }
-
+        
         .menu-item {
-            display: flex; justify-content: space-between; align-items: center; 
+            display: flex; justify-content: space-between; align-items: center;
             width: 100%; padding: 15px 20px; text-align: left;
             background: none; border: none; font-size: 1rem; color: var(--menu-text);
             cursor: pointer; text-decoration: none; box-sizing: border-box;
@@ -319,10 +320,10 @@
             <li>
                 <button class="menu-item" id="toggleHistoryBtn">
                     <span>更新履歴</span>
-                    <span class="menu-version" id="currentVerDisplay">Ver 1.13</span>
+                    <span class="menu-version" id="currentVerDisplay">Ver 1.14</span>
                 </button>
                 <div id="historyContent" class="history-content">
-                    </div>
+                </div>
             </li>
             <li>
                 <button class="menu-item" id="aboutBtn">
@@ -351,7 +352,7 @@
             </li>
         </ul>
         <div style="padding:20px; font-size:0.8rem; color:#999; text-align:center; margin-top:auto;">
-            Unofficial Video Library<br>Ver 1.13
+            Unofficial Video Library<br>Ver 1.14
         </div>
     </div>
 </div>
@@ -453,17 +454,17 @@
             <p>※機能の追加要望などもこちらで受け付けています。</p>
         </div>
         
-        <a href="https://forms.gle/wGQGhcBa8yRvFWBEA" target="_blank" class="google-form-btn">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe5cfe-Rz45rxbG0gVvdrPsW1rduBooGPpk6WrMajkBuOLWPA/viewform?usp=dialog" target="_blank" class="google-form-btn">
             Googleフォームで報告する ↗
         </a>
     </div>
 </div>
 
 <script>
-
     const LIST_URL = "https://raw.githubusercontent.com/mokumokukairo/my-video-list/main/list.txt";
 
     document.addEventListener('contextmenu', e => e.preventDefault());
+    
     document.addEventListener('keydown', e => {
         if (e.key === 'F12' || (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) e.preventDefault();
     });
@@ -518,6 +519,7 @@
     const HISTORY_KEY = 'spchan_search_history';
 
     const updateHistory = [
+        { ver: "1.14", desc: "検索候補・履歴のクリック反映不具合を修正" },
         { ver: "1.13", desc: "タイトル再配置、リセットボタン配置変更、アイコンデザイン刷新" },
         { ver: "1.12", desc: "リセットボタンの実装、バグ報告ページの追加, 軽微なバグの修正" },
         { ver: "1.11", desc: "ハンバーガーメニュー、更新履歴、機能リンクの実装, 軽微なバグの修正" },
@@ -564,7 +566,7 @@
             sideMenuOverlay.classList.remove('open');
         }
     }
-
+    
     const aboutBtn = document.getElementById('aboutBtn');
     const aboutModal = document.getElementById('aboutModal');
     const closeAboutBtn = document.getElementById('closeAboutBtn');
@@ -776,7 +778,6 @@
         mainView.style.display = 'block';
     }
 
-    // --- バグ報告ページ制御 ---
     function openBugReport() {
         history.pushState({ page: 'bugreport' }, '', '#bugreport');
         mainView.style.display = 'none';
@@ -831,7 +832,9 @@
             const div = document.createElement('div');
             div.className = 'suggestion-item';
             div.innerHTML = `<span class="icon-sug">🕒</span> ${h}`;
-            div.onclick = () => {
+            
+            div.onmousedown = (e) => {
+                e.preventDefault(); 
                 searchInput.value = h;
                 updateClearBtn(searchInput, clearSearchBtn);
                 hideSuggestionsBox(suggestionsBox, searchInput);
@@ -865,7 +868,9 @@
             const div = document.createElement('div');
             div.className = 'suggestion-item';
             div.innerHTML = `<span class="icon-sug">🔍</span> ${m.title}`;
-            div.onclick = () => {
+            
+            div.onmousedown = (e) => {
+                e.preventDefault();
                 searchInput.value = m.title;
                 updateClearBtn(searchInput, clearSearchBtn);
                 hideSuggestionsBox(suggestionsBox, searchInput);
@@ -894,7 +899,9 @@
             const div = document.createElement('div');
             div.className = 'suggestion-item';
             div.innerHTML = `<span class="icon-sug">📂</span> ${p}`;
-            div.onclick = () => {
+            
+            div.onmousedown = (e) => {
+                e.preventDefault();
                 playlistInput.value = p;
                 updateClearBtn(playlistInput, clearPlaylistBtn);
                 hideSuggestionsBox(playlistSuggestionsBox, playlistInput);
@@ -938,6 +945,10 @@
         updateTitleSuggestions(searchInput.value);
         updateClearBtn(searchInput, clearSearchBtn);
     });
+    searchInput.addEventListener('blur', () => {
+        setTimeout(() => hideSuggestionsBox(suggestionsBox, searchInput), 200);
+    });
+    
     searchInput.addEventListener('keydown', (e) => {
         if (e.isComposing) return;
         if (e.key === 'Enter') {
@@ -961,6 +972,10 @@
         updatePlaylistSuggestions(playlistInput.value);
         updateClearBtn(playlistInput, clearPlaylistBtn);
     });
+    playlistInput.addEventListener('blur', () => {
+        setTimeout(() => hideSuggestionsBox(playlistSuggestionsBox, playlistInput), 200);
+    });
+
     playlistInput.addEventListener('keydown', (e) => {
         if (e.isComposing) return;
         if (e.key === 'Enter') {
@@ -991,4 +1006,3 @@
 </body>
 
 </html>
-
