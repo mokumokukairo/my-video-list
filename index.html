@@ -14,6 +14,7 @@
             --text-sub: #606060;
             --highlight-bg: #f0f0f0;
             --playlist-badge-bg: #e5e5e5;
+            --btn-bg: #f2f2f2;
         }
 
         body {
@@ -21,6 +22,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0; padding: 0;
+            overscroll-behavior-y: none; 
         }
 
         .hidden { display: none !important; }
@@ -100,33 +102,54 @@
             padding: 10px 20px; background: #fff; border-bottom: 1px solid #eee;
             position: sticky; top: 0; z-index: 100; display: flex; align-items: center; height: 50px;
         }
-
         .back-btn {
             background: none; border: none; cursor: pointer;
             font-size: 1rem; color: #333; display: flex; align-items: center; gap: 8px;
             font-weight: 500; padding: 5px 10px; border-radius: 20px; transition: background 0.2s;
         }
         .back-btn:hover { background-color: #f0f0f0; }
-        .back-icon { width: 20px; height: 20px; fill: currentColor; }
+        .back-icon { width: 24px; height: 24px; fill: currentColor; }
 
         .detail-content { max-width: 900px; width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+        
         .video-container {
-            position: relative; width: 100%; padding-top: 56.25%; background: #000; margin-bottom: 20px; border-radius: 12px; overflow: hidden;
+            position: relative; width: 100%; padding-top: 56.25%; background: #000; margin-bottom: 15px; border-radius: 12px; overflow: hidden;
         }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .detail-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
-        .detail-meta { margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; }
-        .detail-row { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
-        .label { font-weight: bold; color: #555; width: 110px; flex-shrink: 0; }
-        .value { color: #333; word-break: break-all; }
+        
+        .detail-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
+
+        .action-bar {
+            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .action-btn {
+            display: flex; align-items: center; gap: 6px;
+            background-color: var(--btn-bg); color: #333;
+            border: none; padding: 8px 16px; border-radius: 20px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            transition: 0.2s;
+        }
+        .action-btn:hover { background-color: #e0e0e0; }
+        .action-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .action-btn.primary { background-color: #333; color: #fff; }
+        .action-btn.primary:hover { background-color: var(--primary-color); }
+
+        .detail-meta { padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
+        .detail-row { margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; font-size: 0.95rem; }
+        .detail-row:last-child { margin-bottom: 0; }
+        .label { font-weight: bold; color: #666; width: 100px; flex-shrink: 0; }
+        .value { color: #333; word-break: break-all; flex: 1; }
         .value a { color: #0066cc; text-decoration: none; }
         .value a:hover { text-decoration: underline; }
+        .ext-link { font-size: 0.85em; color: #666; margin-left: 5px; }
 
-        .filter-btn {
-            background-color: #333; color: #fff; border: none; padding: 8px 16px;
-            border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        #copyToast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+            border-radius: 30px; font-size: 14px; z-index: 3000;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
         }
-        .filter-btn:hover { background-color: var(--primary-color); }
+        #copyToast.show { opacity: 1; }
 
         .loading, .no-result { text-align: center; margin-top: 50px; color: var(--text-sub); width: 100%; }
         .spinner {
@@ -144,6 +167,8 @@
     <h2>システムメンテナンス中</h2>
     <p>毎日 0:00 〜 0:20 の間はご利用いただけません。</p>
 </div>
+
+<div id="copyToast">URLをコピーしました</div>
 
 <div id="mainView">
     <header>
@@ -173,7 +198,7 @@
 
 <div id="detailPage">
     <div class="detail-header">
-        <button class="back-btn" onclick="closeDetail()">
+        <button class="back-btn" onclick="goBack()">
             <svg class="back-icon" viewBox="0 0 24 24">
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
             </svg>
@@ -184,6 +209,18 @@
         <div class="video-container" id="detailEmbed"></div>
         <div class="detail-title" id="detailTitle"></div>
         
+        <div class="action-bar">
+            <button id="filterByPlaylistBtn" class="action-btn primary" style="display:none;">
+                <svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+                このリストで絞り込み
+            </button>
+            
+            <button onclick="copyVideoUrl()" class="action-btn">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                URLをコピー
+            </button>
+        </div>
+
         <div class="detail-meta">
             <div class="detail-row">
                 <span class="label">動画URL:</span>
@@ -191,16 +228,9 @@
             </div>
             <div class="detail-row">
                 <span class="label">再生リスト:</span>
-                <span class="value" id="detailPlaylistContainer">
-                    </span>
+                <span class="value" id="detailPlaylistContainer"></span>
             </div>
-            <div class="detail-row">
-                <span class="label">操作:</span>
-                <span class="value">
-                    <button id="filterByPlaylistBtn" class="filter-btn">このプレイリストで絞り込む</button>
-                </span>
             </div>
-        </div>
     </div>
 </div>
 
@@ -238,9 +268,16 @@
     const detailUrl = document.getElementById('detailUrl');
     const detailPlaylistContainer = document.getElementById('detailPlaylistContainer');
     const filterByPlaylistBtn = document.getElementById('filterByPlaylistBtn');
+    const copyToast = document.getElementById('copyToast');
 
     let videoData = [];
     let uniquePlaylists = [];
+
+    window.addEventListener('popstate', (event) => {
+        if (detailPage.style.display === 'flex') {
+            closeDetail(false); 
+        }
+    });
 
     function getYouTubeID(url) {
         const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
@@ -303,20 +340,23 @@
     }
 
     function openDetail(video) {
+        history.pushState({ page: 'detail' }, '', '#detail');
+
         detailTitle.textContent = video.title;
         detailUrl.href = video.url;
         detailUrl.textContent = video.url;
 
+
         if (video.playlist) {
             let html = `<span>${video.playlist}</span>`;
             if (video.playlistUrl) {
-                html += ` <a href="${video.playlistUrl}" target="_blank" style="margin-left:10px; font-size:0.9em;">(YouTubeで開く ↗)</a>`;
+                html += ` <a href="${video.playlistUrl}" target="_blank" class="ext-link">YouTubeで開く ↗</a>`;
             }
             detailPlaylistContainer.innerHTML = html;
             
-            filterByPlaylistBtn.style.display = 'inline-block';
+            filterByPlaylistBtn.style.display = 'flex';
             filterByPlaylistBtn.onclick = () => {
-                closeDetail();
+                goBack(); 
                 playlistInput.value = video.playlist;
                 searchInput.value = '';
                 applyFilters();
@@ -337,10 +377,23 @@
         window.scrollTo(0, 0);
     }
 
-    function closeDetail() {
-        detailEmbed.innerHTML = '';
+    function goBack() {
+        history.back(); 
+    }
+
+    function closeDetail(shouldBackHistory = true) {
+        detailEmbed.innerHTML = ''; 
         detailPage.style.display = 'none';
         mainView.style.display = 'block';
+        
+    }
+
+    function copyVideoUrl() {
+        const url = detailUrl.href;
+        navigator.clipboard.writeText(url).then(() => {
+            copyToast.classList.add('show');
+            setTimeout(() => copyToast.classList.remove('show'), 2000);
+        });
     }
 
     function applyFilters() {
