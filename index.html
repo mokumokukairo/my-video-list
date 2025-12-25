@@ -20,8 +20,7 @@
             font-family: Roboto, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
         }
 
         .hidden { display: none !important; }
@@ -40,64 +39,46 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; align-items: center;
         }
-
         h1 { font-size: 1.5rem; color: #333; margin: 0 0 15px 0; }
 
         .search-container {
             width: 100%; max-width: 800px;
             display: flex; flex-direction: column; gap: 10px;
         }
-        @media (min-width: 600px) {
-            .search-container { flex-direction: row; }
-        }
-
+        @media (min-width: 600px) { .search-container { flex-direction: row; } }
+        
         .input-wrapper { position: relative; width: 100%; }
-
         input[type="text"] {
             width: 100%; padding: 12px 20px; font-size: 14px;
             border: 1px solid #ccc; border-radius: 24px;
-            box-sizing: border-box; background-color: #fff;
-            transition: 0.3s;
+            box-sizing: border-box; background-color: #fff; transition: 0.3s;
         }
-        input[type="text"]:focus {
-            outline: none; border-color: #1c62b9;
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-        }
+        input[type="text"]:focus { outline: none; border-color: #1c62b9; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
 
         .suggestions-box {
             position: absolute; top: 100%; left: 0; right: 0;
             background: #fff; border: 1px solid #ccc; border-top: none;
             border-radius: 0 0 24px 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1001; display: none;
-            overflow-y: auto; max-height: 50vh;
+            z-index: 1001; display: none; overflow-y: auto; max-height: 50vh;
         }
-        .suggestion-item {
-            padding: 10px 15px; cursor: pointer; display: flex; align-items: center; font-size: 14px;
-            border-bottom: 1px solid #f5f5f5;
-        }
+        .suggestion-item { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
         .suggestion-item:hover { background-color: var(--highlight-bg); }
         .etc-item { justify-content: center; color: #888; font-style: italic; background-color: #fafafa; }
         .icon { margin-right: 8px; color: var(--text-sub); }
 
         .status-bar { max-width: 1200px; margin: 10px auto 0; padding: 0 20px; text-align: right; font-size: 0.9rem; color: var(--text-sub); }
-        
         .video-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
-
         .video-card {
             background: var(--card-bg); border-radius: 12px; overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
             cursor: pointer; display: flex; flex-direction: column;
         }
         .video-card:hover { transform: translateY(-4px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-
-        .thumbnail-wrapper {
-            position: relative; width: 100%; padding-top: 56.25%; background: #eee;
-        }
+        .thumbnail-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #eee; }
         .thumbnail-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-
         .info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .title {
             font-size: 1rem; font-weight: 600; line-height: 1.4; margin-bottom: 8px;
@@ -108,6 +89,7 @@
             font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px;
             align-self: flex-start; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
+        .url-text { font-size: 0.75rem; color: var(--text-sub); display: flex; justify-content: flex-end; align-items: center; gap: 5px; }
 
         #detailPage {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -115,29 +97,27 @@
             display: none; flex-direction: column;
         }
         .detail-header {
-            padding: 15px 20px; background: #fff; border-bottom: 1px solid #eee;
-            position: sticky; top: 0; z-index: 100; display: flex; align-items: center;
+            padding: 10px 20px; background: #fff; border-bottom: 1px solid #eee;
+            position: sticky; top: 0; z-index: 100; display: flex; align-items: center; height: 50px;
         }
+
         .back-btn {
-            background: none; border: none; font-size: 1.2rem; cursor: pointer;
-            margin-right: 15px; color: #333; display: flex; align-items: center;
+            background: none; border: none; cursor: pointer;
+            font-size: 1rem; color: #333; display: flex; align-items: center; gap: 8px;
+            font-weight: 500; padding: 5px 10px; border-radius: 20px; transition: background 0.2s;
         }
-        .back-btn:hover { color: var(--primary-color); }
-        
-        .detail-content {
-            max-width: 900px; width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box;
-        }
+        .back-btn:hover { background-color: #f0f0f0; }
+        .back-icon { width: 20px; height: 20px; fill: currentColor; }
+
+        .detail-content { max-width: 900px; width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box; }
         .video-container {
             position: relative; width: 100%; padding-top: 56.25%; background: #000; margin-bottom: 20px; border-radius: 12px; overflow: hidden;
         }
-        .video-container iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
-        }
-
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .detail-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
         .detail-meta { margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; }
         .detail-row { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
-        .label { font-weight: bold; color: #555; width: 100px; flex-shrink: 0; }
+        .label { font-weight: bold; color: #555; width: 110px; flex-shrink: 0; }
         .value { color: #333; word-break: break-all; }
         .value a { color: #0066cc; text-decoration: none; }
         .value a:hover { text-decoration: underline; }
@@ -194,7 +174,10 @@
 <div id="detailPage">
     <div class="detail-header">
         <button class="back-btn" onclick="closeDetail()">
-            <span>← 一覧に戻る</span>
+            <svg class="back-icon" viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            <span>一覧に戻る</span>
         </button>
     </div>
     <div class="detail-content">
@@ -208,7 +191,8 @@
             </div>
             <div class="detail-row">
                 <span class="label">再生リスト:</span>
-                <span class="value" id="detailPlaylistName"></span>
+                <span class="value" id="detailPlaylistContainer">
+                    </span>
             </div>
             <div class="detail-row">
                 <span class="label">操作:</span>
@@ -252,12 +236,11 @@
     const detailEmbed = document.getElementById('detailEmbed');
     const detailTitle = document.getElementById('detailTitle');
     const detailUrl = document.getElementById('detailUrl');
-    const detailPlaylistName = document.getElementById('detailPlaylistName');
+    const detailPlaylistContainer = document.getElementById('detailPlaylistContainer');
     const filterByPlaylistBtn = document.getElementById('filterByPlaylistBtn');
 
     let videoData = [];
-    let uniquePlaylists = []; 
-    const MAX_HISTORY = 5;
+    let uniquePlaylists = [];
 
     function getYouTubeID(url) {
         const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
@@ -283,9 +266,7 @@
             loadingArea.classList.add('hidden');
             searchInput.disabled = false;
             playlistInput.disabled = false;
-            
             displayVideos(videoData);
-
         } catch (e) {
             loadingArea.innerHTML = "<p style='color:red'>リストの取得に失敗しました。</p>";
         }
@@ -294,7 +275,6 @@
     function displayVideos(videos) {
         videoGrid.innerHTML = '';
         statusBar.textContent = `全 ${videoData.length} 件中 ${videos.length} 件を表示`;
-        
         document.getElementById('noResult').classList.toggle('hidden', videos.length > 0);
         if (videos.length === 0) return;
 
@@ -302,7 +282,7 @@
         videos.forEach(video => {
             const div = document.createElement('div');
             div.className = 'video-card';
-            div.onclick = () => openDetail(video); 
+            div.onclick = () => openDetail(video);
 
             const thumbSrc = video.thumb ? video.thumb : 'data:image/svg+xml,...';
             const playlistBadge = video.playlist ? `<div class="playlist-badge">📂 ${video.playlist}</div>` : '';
@@ -314,7 +294,7 @@
                 <div class="info">
                     <div class="title">${video.title}</div>
                     ${playlistBadge}
-                    <div class="url-text">詳細を見る →</div>
+                    <div class="url-text">詳細を見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
                 </div>
             `;
             fragment.appendChild(div);
@@ -326,24 +306,30 @@
         detailTitle.textContent = video.title;
         detailUrl.href = video.url;
         detailUrl.textContent = video.url;
-        detailPlaylistName.textContent = video.playlist || "なし";
-        
-        if (video.id) {
-            detailEmbed.innerHTML = `<iframe src="https://www.youtube.com/embed/${video.id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-        } else {
-            detailEmbed.innerHTML = '<p style="color:#fff; text-align:center; padding-top:20%;">動画を読み込めません</p>';
-        }
 
         if (video.playlist) {
+            let html = `<span>${video.playlist}</span>`;
+            if (video.playlistUrl) {
+                html += ` <a href="${video.playlistUrl}" target="_blank" style="margin-left:10px; font-size:0.9em;">(YouTubeで開く ↗)</a>`;
+            }
+            detailPlaylistContainer.innerHTML = html;
+            
             filterByPlaylistBtn.style.display = 'inline-block';
             filterByPlaylistBtn.onclick = () => {
                 closeDetail();
                 playlistInput.value = video.playlist;
                 searchInput.value = '';
-                applyFilters(); 
+                applyFilters();
             };
         } else {
+            detailPlaylistContainer.textContent = "なし";
             filterByPlaylistBtn.style.display = 'none';
+        }
+        
+        if (video.id) {
+            detailEmbed.innerHTML = `<iframe src="https://www.youtube.com/embed/${video.id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        } else {
+            detailEmbed.innerHTML = '<p style="color:#fff; text-align:center; padding-top:20%;">動画を読み込めません</p>';
         }
 
         mainView.style.display = 'none';
@@ -352,7 +338,7 @@
     }
 
     function closeDetail() {
-        detailEmbed.innerHTML = ''; 
+        detailEmbed.innerHTML = '';
         detailPage.style.display = 'none';
         mainView.style.display = 'block';
     }
@@ -375,7 +361,6 @@
     function updatePlaylistSuggestions(val) {
         const cleanVal = val.toLowerCase().trim();
         playlistSuggestionsBox.innerHTML = '';
-        
         let matches = uniquePlaylists;
         if (cleanVal !== '') {
             matches = uniquePlaylists.filter(p => p.toLowerCase().includes(cleanVal));
@@ -400,11 +385,10 @@
         playlistSuggestionsBox.style.display = 'block';
     }
 
-
     function updateTitleSuggestions(val) {
         const cleanVal = val.trim().toLowerCase();
         suggestionsBox.innerHTML = '';
-        if (cleanVal === '') return; 
+        if (cleanVal === '') return;
 
         const keywords = cleanVal.split(/[\s　]+/).filter(k => k !== '');
         const matches = videoData.filter(v => keywords.every(w => v.title.toLowerCase().includes(w)));
