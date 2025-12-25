@@ -48,35 +48,57 @@
             display: flex; flex-direction: column; gap: 10px;
         }
         @media (min-width: 600px) { .search-container { flex-direction: row; } }
-        
-        .input-wrapper { position: relative; width: 100%; }
+
+        .input-wrapper { 
+            position: relative; 
+            width: 100%; 
+            z-index: 1; 
+        }
+        .input-wrapper:focus-within {
+            z-index: 10000; 
+        }
         
         input[type="text"], input[type="search"] {
-            width: 100%; padding: 12px 20px; font-size: 16px;
+            width: 100%; padding: 12px 50px 12px 20px;
+            font-size: 16px;
             border: 1px solid #ccc; border-radius: 24px;
             box-sizing: border-box; background-color: #fff; transition: 0.2s;
-            appearance: none; z-index: 1002; position: relative;
+            appearance: none; position: relative;
         }
         input:focus { outline: none; border-color: #1c62b9; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
 
+        input[type="search"]::-webkit-search-cancel-button {
+            -webkit-appearance: none; appearance: none; display: none;
+        }
+
+        .clear-btn {
+            position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+            width: 44px; height: 44px;
+            border: none; background: transparent;
+            font-size: 24px; color: #999; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .clear-btn.visible { opacity: 1; pointer-events: auto; }
+        .clear-btn:active { color: #333; }
+
         input.active {
-            border-radius: 24px 24px 0 0 !important; 
-            border-bottom: 1px solid transparent !important; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important; 
+            border-radius: 24px 24px 0 0 !important;
+            border-bottom: 1px solid transparent !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
         }
 
         .suggestions-box {
             position: absolute; top: 100%; left: 0; right: 0;
             background: #fff; 
-            border: 1px solid #ccc; border-top: none; 
-            border-radius: 0 0 24px 24px;
+            border: 1px solid #ccc; border-top: none;
+            border-radius: 0 0 24px 24px; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1001; display: none; overflow-y: auto; max-height: 50vh;
+            display: none; overflow-y: auto; max-height: 50vh;
             margin-top: -1px;
         }
         .suggestion-item { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
         .suggestion-item:hover { background-color: var(--highlight-bg); }
-        .etc-item { justify-content: center; color: #888; font-style: italic; background-color: #fafafa; }
         .icon { margin-right: 8px; color: var(--text-sub); }
 
         .status-bar { max-width: 1200px; margin: 10px auto 0; padding: 0 20px; text-align: right; font-size: 0.9rem; color: var(--text-sub); }
@@ -89,8 +111,7 @@
             background: var(--card-bg); border-radius: 12px; overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
             cursor: pointer; display: flex; flex-direction: column;
-            content-visibility: auto; 
-            contain-intrinsic-size: 300px;
+            content-visibility: auto; contain-intrinsic-size: 300px;
         }
         .video-card:hover { transform: translateY(-4px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .thumbnail-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #eee; }
@@ -145,7 +166,6 @@
 
         .detail-meta { padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
         .detail-row { margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; font-size: 0.95rem; }
-        .detail-row:last-child { margin-bottom: 0; }
         .label { font-weight: bold; color: #666; width: 100px; flex-shrink: 0; }
         .value { color: #333; word-break: break-all; flex: 1; }
         .value a { color: #0066cc; text-decoration: none; }
@@ -186,10 +206,12 @@
         <div class="search-container">
             <div class="input-wrapper">
                 <input type="search" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off" name="search_q_uniq" enterkeyhint="search">
+                <button id="clearSearch" class="clear-btn">×</button>
                 <div id="suggestionsBox" class="suggestions-box"></div>
             </div>
             <div class="input-wrapper">
                 <input type="search" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off" name="search_p_uniq" enterkeyhint="search">
+                <button id="clearPlaylist" class="clear-btn">×</button>
                 <div id="playlistSuggestionsBox" class="suggestions-box"></div>
             </div>
         </div>
@@ -265,9 +287,13 @@
     if (checkMaintenance()) throw new Error("Maintenance");
 
     const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
     const suggestionsBox = document.getElementById('suggestionsBox');
+
     const playlistInput = document.getElementById('playlistSearchInput');
+    const clearPlaylistBtn = document.getElementById('clearPlaylist');
     const playlistSuggestionsBox = document.getElementById('playlistSuggestionsBox');
+
     const videoGrid = document.getElementById('videoGrid');
     const loadingArea = document.getElementById('loadingArea');
     const statusBar = document.getElementById('statusBar');
@@ -443,6 +469,7 @@
                 goBack();
                 playlistInput.value = video.playlist;
                 searchInput.value = '';
+                updateClearBtn(searchInput, clearSearchBtn); 
                 applyFilters(true);
             };
         } else {
@@ -491,12 +518,12 @@
 
     function showSuggestionsBox(box, input) {
         box.style.display = 'block';
-        input.classList.add('active'); 
+        input.classList.add('active');
     }
     
     function hideSuggestionsBox(box, input) {
         box.style.display = 'none';
-        input.classList.remove('active'); 
+        input.classList.remove('active');
     }
 
     function showHistory() {
@@ -513,6 +540,7 @@
             div.innerHTML = `<span class="icon">🕒</span> ${h}`;
             div.onclick = () => {
                 searchInput.value = h;
+                updateClearBtn(searchInput, clearSearchBtn);
                 hideSuggestionsBox(suggestionsBox, searchInput);
                 saveHistory(h); 
                 applyFilters(true);
@@ -546,6 +574,7 @@
             div.innerHTML = `<span class="icon">🔍</span> ${m.title}`;
             div.onclick = () => {
                 searchInput.value = m.title;
+                updateClearBtn(searchInput, clearSearchBtn);
                 hideSuggestionsBox(suggestionsBox, searchInput);
                 saveHistory(m.title); 
                 applyFilters(true);
@@ -574,6 +603,7 @@
             div.innerHTML = `<span class="icon">📂</span> ${p}`;
             div.onclick = () => {
                 playlistInput.value = p;
+                updateClearBtn(playlistInput, clearPlaylistBtn);
                 hideSuggestionsBox(playlistSuggestionsBox, playlistInput);
                 applyFilters(true);
             };
@@ -582,21 +612,31 @@
         showSuggestionsBox(playlistSuggestionsBox, playlistInput);
     }
 
-    searchInput.addEventListener('focus', () => {
-        updateTitleSuggestions(searchInput.value);
-    });
-    searchInput.addEventListener('click', () => {
-        updateTitleSuggestions(searchInput.value);
-    });
-    
+    function updateClearBtn(input, btn) {
+        if (input.value.length > 0) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    }
+
+    function clearInput(input, btn, box) {
+        input.value = '';
+        input.focus(); 
+        updateClearBtn(input, btn);
+        hideSuggestionsBox(box, input); 
+        applyFilters(true);
+    }
+
+    searchInput.addEventListener('focus', () => updateTitleSuggestions(searchInput.value));
+    searchInput.addEventListener('click', () => updateTitleSuggestions(searchInput.value));
     searchInput.addEventListener('input', () => {
         triggerFilter();
         updateTitleSuggestions(searchInput.value);
+        updateClearBtn(searchInput, clearSearchBtn);
     });
-
     searchInput.addEventListener('keydown', (e) => {
         if (e.isComposing) return;
-
         if (e.key === 'Enter') {
             e.preventDefault();
             hideSuggestionsBox(suggestionsBox, searchInput);
@@ -606,11 +646,17 @@
         }
     });
 
+    clearSearchBtn.addEventListener('click', () => {
+        clearInput(searchInput, clearSearchBtn, suggestionsBox);
+        showHistory();
+    });
+
     playlistInput.addEventListener('focus', () => updatePlaylistSuggestions(playlistInput.value));
     playlistInput.addEventListener('click', () => updatePlaylistSuggestions(playlistInput.value));
     playlistInput.addEventListener('input', () => {
         triggerFilter();
         updatePlaylistSuggestions(playlistInput.value);
+        updateClearBtn(playlistInput, clearPlaylistBtn);
     });
     playlistInput.addEventListener('keydown', (e) => {
         if (e.isComposing) return;
@@ -622,11 +668,16 @@
         }
     });
 
+    clearPlaylistBtn.addEventListener('click', () => {
+        clearInput(playlistInput, clearPlaylistBtn, playlistSuggestionsBox);
+        updatePlaylistSuggestions(''); 
+    });
+
     document.addEventListener('click', e => {
-        if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target) && !clearSearchBtn.contains(e.target)) {
             hideSuggestionsBox(suggestionsBox, searchInput);
         }
-        if (!playlistInput.contains(e.target) && !playlistSuggestionsBox.contains(e.target)) {
+        if (!playlistInput.contains(e.target) && !playlistSuggestionsBox.contains(e.target) && !clearPlaylistBtn.contains(e.target)) {
             hideSuggestionsBox(playlistSuggestionsBox, playlistInput);
         }
     });
