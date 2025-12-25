@@ -66,15 +66,11 @@
 
         .search-container {
             width: 100%; max-width: 800px;
-            display: flex; flex-direction: column; gap: 10px;
+            display: flex; flex-direction: column; gap: 12px;
         }
         
-        .search-row {
-            display: flex; gap: 8px; width: 100%; align-items: center;
-        }
-
         .input-wrapper { 
-            position: relative; width: 100%; z-index: 1; flex: 1;
+            position: relative; width: 100%; z-index: 1;
         }
         .input-wrapper:focus-within { z-index: 10000; }
         
@@ -123,14 +119,14 @@
         .reset-long-btn {
             background: var(--btn-bg); border: 1px solid #ccc;
             border-radius: 24px; padding: 0 16px; height: 44px;
-            font-size: 0.85rem; cursor: pointer; color: #555;
-            display: flex; align-items: center; gap: 6px;
-            white-space: nowrap; flex-shrink: 0;
-            transition: 0.2s;
+            font-size: 0.9rem; cursor: pointer; color: #555;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            white-space: nowrap; width: 100%; box-sizing: border-box;
+            transition: 0.2s; margin-top: 5px;
         }
         .reset-long-btn:hover { background: #e0e0e0; color: #000; border-color: #bbb; }
         .reset-long-btn:active { transform: scale(0.98); }
-        .reset-icon { width: 14px; height: 14px; stroke: currentColor; }
+        .reset-icon { width: 16px; height: 16px; stroke: currentColor; }
 
         .side-menu-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -299,7 +295,7 @@
             <ul style="padding-left:20px; margin:10px 0;">
                 <li><strong>上の窓：</strong>動画タイトルで検索できます（例：「大会」「決勝」）。</li>
                 <li><strong>下の窓：</strong>再生リスト（大会名など）で絞り込めます。</li>
-                <li><strong>リセット：</strong>入力窓の横の「入力内容を全てリセット」でクリアします。</li>
+                <li><strong>リセット：</strong>「入力内容を全てリセット」ボタンでクリアします。</li>
             </ul>
 
             <p style="font-size:0.85rem; background:#f0f0f0; padding:10px; border-radius:6px;">
@@ -320,7 +316,7 @@
             <li>
                 <button class="menu-item" id="toggleHistoryBtn">
                     <span>更新履歴</span>
-                    <span class="menu-version" id="currentVerDisplay">Ver 1.14</span>
+                    <span class="menu-version" id="currentVerDisplay">Ver 1.15</span>
                 </button>
                 <div id="historyContent" class="history-content">
                 </div>
@@ -352,7 +348,7 @@
             </li>
         </ul>
         <div style="padding:20px; font-size:0.8rem; color:#999; text-align:center; margin-top:auto;">
-            Unofficial Video Library<br>Ver 1.14
+            Unofficial Video Library<br>Ver 1.15
         </div>
     </div>
 </div>
@@ -373,17 +369,16 @@
                 <div id="suggestionsBox" class="suggestions-box"></div>
             </div>
             
-            <div class="search-row">
-                <div class="input-wrapper">
-                    <input type="search" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off" name="search_p_uniq" enterkeyhint="search">
-                    <button id="clearPlaylist" class="clear-btn">×</button>
-                    <div id="playlistSuggestionsBox" class="suggestions-box"></div>
-                </div>
-                <button id="resetAllBtn" class="reset-long-btn" title="全ての入力をクリア">
-                    <svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                    入力内容を全てリセット
-                </button>
+            <div class="input-wrapper">
+                <input type="search" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off" name="search_p_uniq" enterkeyhint="search">
+                <button id="clearPlaylist" class="clear-btn">×</button>
+                <div id="playlistSuggestionsBox" class="suggestions-box"></div>
             </div>
+            
+            <button id="resetAllBtn" class="reset-long-btn" title="全ての入力をクリア">
+                <svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                入力内容を全てリセット
+            </button>
         </div>
     </header>
 
@@ -519,6 +514,7 @@
     const HISTORY_KEY = 'spchan_search_history';
 
     const updateHistory = [
+        { ver: "1.15", desc: "検索窓のレイアウト調整、リセットボタン配置変更" },
         { ver: "1.14", desc: "検索候補・履歴のクリック反映不具合を修正" },
         { ver: "1.13", desc: "タイトル再配置、リセットボタン配置変更、アイコンデザイン刷新" },
         { ver: "1.12", desc: "リセットボタンの実装、バグ報告ページの追加, 軽微なバグの修正" },
