@@ -50,12 +50,14 @@
         @media (min-width: 600px) { .search-container { flex-direction: row; } }
         
         .input-wrapper { position: relative; width: 100%; }
-        input[type="text"] {
-            width: 100%; padding: 12px 20px; font-size: 14px;
+        
+        input[type="text"], input[type="search"] {
+            width: 100%; padding: 12px 20px; font-size: 16px; 
             border: 1px solid #ccc; border-radius: 24px;
             box-sizing: border-box; background-color: #fff; transition: 0.3s;
+            appearance: none; 
         }
-        input[type="text"]:focus { outline: none; border-color: #1c62b9; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
+        input:focus { outline: none; border-color: #1c62b9; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
 
         .suggestions-box {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -73,7 +75,7 @@
             display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
-        
+
         .video-card {
             background: var(--card-bg); border-radius: 12px; overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
@@ -174,11 +176,11 @@
         <h1>スポチャン動画検索</h1>
         <div class="search-container">
             <div class="input-wrapper">
-                <input type="text" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off" name="search_q_uniq">
+                <input type="search" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off" name="search_q_uniq" enterkeyhint="search">
                 <div id="suggestionsBox" class="suggestions-box"></div>
             </div>
             <div class="input-wrapper">
-                <input type="text" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off" name="search_p_uniq">
+                <input type="search" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off" name="search_p_uniq" enterkeyhint="search">
                 <div id="playlistSuggestionsBox" class="suggestions-box"></div>
             </div>
         </div>
@@ -235,6 +237,7 @@
 </div>
 
 <script>
+
     const LIST_URL = "https://raw.githubusercontent.com/mokumokukairo/my-video-list/main/list.txt";
 
     document.addEventListener('contextmenu', e => e.preventDefault());
@@ -276,6 +279,7 @@
     let uniquePlaylists = [];
     let displayedCount = 0; 
     const BATCH_SIZE = 40; 
+    const HISTORY_KEY = 'spchan_search_history';
 
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
@@ -299,16 +303,14 @@
             const response = await fetch(LIST_URL + '?t=' + Date.now());
             if (!response.ok) throw new Error();
             const text = await response.text();
-
+            
             const rawData = new Function("return [" + text + "]")();
-
+            
             const videoMap = new Map();
             rawData.forEach(v => {
                 v.id = getYouTubeID(v.url);
                 if (!v.id) return;
-
                 const hasPlaylist = (v.playlist && v.playlist !== 'NA');
-
                 if (!videoMap.has(v.id)) {
                     videoMap.set(v.id, v);
                 } else {
@@ -320,13 +322,10 @@
             });
 
             allVideoData = Array.from(videoMap.values());
-
             const playlistSet = new Set();
             allVideoData.forEach(v => {
                 v.thumb = `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg`;
-                if (!v.playlist || v.playlist === 'NA') {
-                    v.playlist = null;
-                }
+                if (!v.playlist || v.playlist === 'NA') v.playlist = null;
                 if (v.playlist) playlistSet.add(v.playlist);
             });
             uniquePlaylists = Array.from(playlistSet).sort();
@@ -334,7 +333,6 @@
             loadingArea.classList.add('hidden');
             searchInput.disabled = false;
             playlistInput.disabled = false;
-            
             applyFilters(true);
         } catch (e) {
             console.error(e);
@@ -472,14 +470,51 @@
         });
     }
 
+    function saveHistory(keyword) {
+        const trimmed = keyword.trim();
+        if (!trimmed) return;
+        
+        let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        history = history.filter(h => h !== trimmed);
+        history.unshift(trimmed);
+        if (history.length > 5) history.pop();
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function showHistory() {
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        suggestionsBox.innerHTML = '';
+        if (history.length === 0) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+
+        history.forEach(h => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `<span class="icon">🕒</span> ${h}`;
+            div.onclick = () => {
+                searchInput.value = h;
+                suggestionsBox.style.display = 'none';
+                saveHistory(h); 
+                applyFilters(true);
+            };
+            suggestionsBox.appendChild(div);
+        });
+        suggestionsBox.style.display = 'block';
+    }
+
     function updateTitleSuggestions(val) {
         const cleanVal = val.trim().toLowerCase();
-        suggestionsBox.innerHTML = '';
-        if (cleanVal === '') return;
 
+        if (cleanVal === '') {
+            showHistory();
+            return;
+        }
+
+        suggestionsBox.innerHTML = '';
         const keywords = cleanVal.split(/[\s　]+/).filter(k => k !== '');
         const matches = allVideoData.filter(v => keywords.every(w => v.title.toLowerCase().includes(w)));
-        
         const displayMatches = matches.slice(0, 10);
         
         displayMatches.forEach(m => {
@@ -489,6 +524,7 @@
             div.onclick = () => {
                 searchInput.value = m.title;
                 suggestionsBox.style.display = 'none';
+                saveHistory(m.title); 
                 applyFilters(true);
             };
             suggestionsBox.appendChild(div);
@@ -523,16 +559,27 @@
         playlistSuggestionsBox.style.display = 'block';
     }
 
+    searchInput.addEventListener('focus', () => {
+        updateTitleSuggestions(searchInput.value);
+    });
+    searchInput.addEventListener('click', () => {
+        updateTitleSuggestions(searchInput.value);
+    });
+
     searchInput.addEventListener('input', () => {
         triggerFilter();
         updateTitleSuggestions(searchInput.value);
     });
+
     searchInput.addEventListener('keydown', (e) => {
+        if (e.isComposing) return;
+
         if (e.key === 'Enter') {
             e.preventDefault();
-            suggestionsBox.style.display = 'none';
-            searchInput.blur();
-            applyFilters(true);
+            suggestionsBox.style.display = 'none'; 
+            searchInput.blur(); 
+            saveHistory(searchInput.value); 
+            applyFilters(true); 
         }
     });
 
@@ -543,6 +590,7 @@
         updatePlaylistSuggestions(playlistInput.value);
     });
     playlistInput.addEventListener('keydown', (e) => {
+        if (e.isComposing) return;
         if (e.key === 'Enter') {
             e.preventDefault();
             playlistSuggestionsBox.style.display = 'none';
@@ -564,4 +612,5 @@
 </script>
 
 </body>
+
 </html>
