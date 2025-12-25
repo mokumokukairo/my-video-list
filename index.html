@@ -24,233 +24,159 @@
             padding: 0;
         }
 
+        .hidden { display: none !important; }
+
         #maintenanceScreen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 9999; display: none;
+            flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
         .maint-icon { font-size: 4rem; margin-bottom: 20px; }
-        .maint-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
-        .maint-desc { color: #666; }
 
-        /* ヘッダー周り */
         header {
             background-color: var(--card-bg);
             padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            position: sticky; top: 0; z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 {
-            margin: 0 0 15px 0;
-            font-size: 1.5rem;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        h1 { font-size: 1.5rem; color: #333; margin: 0 0 15px 0; }
+
+        .search-container {
+            width: 100%; max-width: 800px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        @media (min-width: 600px) {
+            .search-container { flex-direction: row; }
         }
 
-        .search-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-        }
+        .input-wrapper { position: relative; width: 100%; }
 
         input[type="text"] {
-            width: 100%;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 24px;
-            box-sizing: border-box;
-            background-color: #fff;
-            transition: box-shadow 0.3s;
+            width: 100%; padding: 12px 20px; font-size: 14px;
+            border: 1px solid #ccc; border-radius: 24px;
+            box-sizing: border-box; background-color: #fff;
+            transition: 0.3s;
         }
         input[type="text"]:focus {
-            outline: none;
-            border-color: #1c62b9;
+            outline: none; border-color: #1c62b9;
             box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-            border-bottom-left-radius: 0; 
-            border-bottom-right-radius: 0;
         }
 
         .suggestions-box {
-            position: absolute;
-            top: 100%; left: 0; right: 0;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 24px 24px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1001;
-            display: none;
-            overflow: hidden;
-            max-height: 50vh;
-            overflow-y: auto;
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: #fff; border: 1px solid #ccc; border-top: none;
+            border-radius: 0 0 24px 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1001; display: none;
+            overflow-y: auto; max-height: 50vh;
         }
-
         .suggestion-item {
-            padding: 10px 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
+            padding: 10px 15px; cursor: pointer; display: flex; align-items: center; font-size: 14px;
             border-bottom: 1px solid #f5f5f5;
         }
-        .suggestion-item:last-child { border-bottom: none; }
         .suggestion-item:hover { background-color: var(--highlight-bg); }
+        .etc-item { justify-content: center; color: #888; font-style: italic; background-color: #fafafa; }
+        .icon { margin-right: 8px; color: var(--text-sub); }
 
-        .etc-item {
-            justify-content: center;
-            color: #888;
-            font-style: italic;
-            background-color: #fafafa;
-            font-weight: bold;
-        }
-        .etc-item:hover {
-            background-color: #eee;
-            color: #333;
-        }
-
-        .icon {
-            margin-right: 12px;
-            font-size: 16px;
-            color: var(--text-sub);
-            width: 20px;
-            text-align: center;
-        }
-        .history-label { color: #551a8b; }
-        .delete-history {
-            margin-left: auto;
-            color: #999;
-            font-size: 12px;
-            padding: 2px 6px;
-        }
-        .delete-history:hover { color: red; }
-
+        .status-bar { max-width: 1200px; margin: 10px auto 0; padding: 0 20px; text-align: right; font-size: 0.9rem; color: var(--text-sub); }
+        
         .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
 
         .video-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            background: var(--card-bg); border-radius: 12px; overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
+            cursor: pointer; display: flex; flex-direction: column;
         }
-        .video-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
         .thumbnail-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%;
-            background: #eee;
+            position: relative; width: 100%; padding-top: 56.25%; background: #eee;
         }
-        .thumbnail-img {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-        }
+        .thumbnail-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 
-        .info {
-            padding: 12px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
+        .info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .title {
-            font-size: 1rem;
-            font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 1rem; font-weight: 600; line-height: 1.4; margin-bottom: 8px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-
         .playlist-badge {
-            display: inline-block;
-            background-color: var(--playlist-badge-bg);
-            color: #555;
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin-bottom: 6px;
-            align-self: flex-start;
-            max-width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            display: inline-block; background-color: var(--playlist-badge-bg); color: #555;
+            font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px;
+            align-self: flex-start; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        .url-text { font-size: 0.75rem; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;}
+        #detailPage {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 2000; overflow-y: auto;
+            display: none; flex-direction: column;
+        }
+        .detail-header {
+            padding: 15px 20px; background: #fff; border-bottom: 1px solid #eee;
+            position: sticky; top: 0; z-index: 100; display: flex; align-items: center;
+        }
+        .back-btn {
+            background: none; border: none; font-size: 1.2rem; cursor: pointer;
+            margin-right: 15px; color: #333; display: flex; align-items: center;
+        }
+        .back-btn:hover { color: var(--primary-color); }
         
-        .loading, .no-result {
-            text-align: center; margin-top: 50px; font-size: 1.2rem; color: var(--text-sub); width: 100%;
+        .detail-content {
+            max-width: 900px; width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box;
         }
-        .status-bar {
-            max-width: 1200px; margin: 10px auto 0; padding: 0 20px; font-size: 0.9rem; color: var(--text-sub); text-align: right;
+        .video-container {
+            position: relative; width: 100%; padding-top: 56.25%; background: #000; margin-bottom: 20px; border-radius: 12px; overflow: hidden;
         }
-        .hidden { display: none !important; }
+        .video-container iframe {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+
+        .detail-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
+        .detail-meta { margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; }
+        .detail-row { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
+        .label { font-weight: bold; color: #555; width: 100px; flex-shrink: 0; }
+        .value { color: #333; word-break: break-all; }
+        .value a { color: #0066cc; text-decoration: none; }
+        .value a:hover { text-decoration: underline; }
+
+        .filter-btn {
+            background-color: #333; color: #fff; border: none; padding: 8px 16px;
+            border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .filter-btn:hover { background-color: var(--primary-color); }
+
+        .loading, .no-result { text-align: center; margin-top: 50px; color: var(--text-sub); width: 100%; }
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 40px; height: 40px;
+            border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-color);
+            border-radius: 50%; width: 40px; height: 40px;
             animation: spin 1s linear infinite; margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
     </style>
 </head>
 <body>
 
 <div id="maintenanceScreen">
     <div class="maint-icon">🔧</div>
-    <div class="maint-title">システムメンテナンス中</div>
-    <p class="maint-desc">
-        データの自動更新を行っています。<br>
-        毎日 0:00 〜 0:20 の間はご利用いただけません。<br>
-        しばらく経ってから再読み込みしてください。
-    </p>
+    <h2>システムメンテナンス中</h2>
+    <p>毎日 0:00 〜 0:20 の間はご利用いただけません。</p>
 </div>
 
-<div id="mainContent">
+<div id="mainView">
     <header>
         <h1>スポチャン動画検索</h1>
-        <div class="search-wrapper">
-            <input type="text" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off">
-            <div id="suggestionsBox" class="suggestions-box"></div>
+        <div class="search-container">
+            <div class="input-wrapper">
+                <input type="text" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off">
+                <div id="suggestionsBox" class="suggestions-box"></div>
+            </div>
+            <div class="input-wrapper">
+                <input type="text" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off">
+                <div id="playlistSuggestionsBox" class="suggestions-box"></div>
+            </div>
         </div>
     </header>
 
@@ -258,91 +184,109 @@
 
     <div id="loadingArea" class="loading">
         <div class="spinner"></div>
-        <p>動画リストを読み込んでいます...</p>
+        <p>リストを読み込んでいます...</p>
     </div>
 
     <div class="video-grid" id="videoGrid"></div>
     <p class="no-result hidden" id="noResult">条件に一致する動画が見つかりませんでした。</p>
 </div>
 
+<div id="detailPage">
+    <div class="detail-header">
+        <button class="back-btn" onclick="closeDetail()">
+            <span>← 一覧に戻る</span>
+        </button>
+    </div>
+    <div class="detail-content">
+        <div class="video-container" id="detailEmbed"></div>
+        <div class="detail-title" id="detailTitle"></div>
+        
+        <div class="detail-meta">
+            <div class="detail-row">
+                <span class="label">動画URL:</span>
+                <span class="value"><a href="#" id="detailUrl" target="_blank"></a></span>
+            </div>
+            <div class="detail-row">
+                <span class="label">再生リスト:</span>
+                <span class="value" id="detailPlaylistName"></span>
+            </div>
+            <div class="detail-row">
+                <span class="label">操作:</span>
+                <span class="value">
+                    <button id="filterByPlaylistBtn" class="filter-btn">このプレイリストで絞り込む</button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const LIST_URL = "https://raw.githubusercontent.com/mokumokukairo/my-video-list/main/list.txt";
 
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.addEventListener('keydown', event => {
-        if (event.key === 'F12' || (event.ctrlKey && (event.key === 'u' || event.key === 'U')) || (event.ctrlKey && event.shiftKey && event.key === 'I')) {
-            event.preventDefault();
-        }
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) e.preventDefault();
     });
 
     function checkMaintenance() {
         const now = new Date();
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        if (hours === 0 && minutes < 20) {
-            document.getElementById('mainContent').style.display = 'none';
+        if (now.getHours() === 0 && now.getMinutes() < 20) {
+            document.getElementById('mainView').style.display = 'none';
             document.getElementById('maintenanceScreen').style.display = 'flex';
             return true;
         }
         return false;
     }
-
-    if (checkMaintenance()) {
-        throw new Error("Maintenance Mode");
-    }
+    if (checkMaintenance()) throw new Error("Maintenance");
 
     const searchInput = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestionsBox');
+    const playlistInput = document.getElementById('playlistSearchInput');
+    const playlistSuggestionsBox = document.getElementById('playlistSuggestionsBox');
     const videoGrid = document.getElementById('videoGrid');
-    const noResult = document.getElementById('noResult');
     const loadingArea = document.getElementById('loadingArea');
     const statusBar = document.getElementById('statusBar');
-    let videoData = []; 
+    
+    const detailPage = document.getElementById('detailPage');
+    const mainView = document.getElementById('mainView');
+    const detailEmbed = document.getElementById('detailEmbed');
+    const detailTitle = document.getElementById('detailTitle');
+    const detailUrl = document.getElementById('detailUrl');
+    const detailPlaylistName = document.getElementById('detailPlaylistName');
+    const filterByPlaylistBtn = document.getElementById('filterByPlaylistBtn');
+
+    let videoData = [];
+    let uniquePlaylists = []; 
     const MAX_HISTORY = 5;
-    const MAX_SUGGESTIONS = 50; 
 
     function getYouTubeID(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
+        const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
         return (match && match[2].length === 11) ? match[2] : null;
-    }
-
-    function getHistory() { return JSON.parse(localStorage.getItem('searchHistory')) || []; }
-    function saveHistory(keyword) {
-        if (!keyword) return;
-        let history = getHistory();
-        history = history.filter(item => item !== keyword);
-        history.unshift(keyword);
-        if (history.length > MAX_HISTORY) history.pop();
-        localStorage.setItem('searchHistory', JSON.stringify(history));
-    }
-    function deleteHistory(keyword, event) {
-        event.stopPropagation();
-        let history = getHistory();
-        history = history.filter(item => item !== keyword);
-        localStorage.setItem('searchHistory', JSON.stringify(history));
-        if (document.activeElement === searchInput) updateSuggestions(searchInput.value);
     }
 
     async function fetchVideoList() {
         try {
-            const response = await fetch(LIST_URL + '?t=' + new Date().getTime());
-            if (!response.ok) throw new Error("リストの読み込みに失敗しました");
+            const response = await fetch(LIST_URL + '?t=' + Date.now());
+            if (!response.ok) throw new Error();
             const text = await response.text();
             videoData = new Function("return [" + text + "]")();
             
+            const playlistSet = new Set();
             videoData.forEach(v => {
                 v.id = getYouTubeID(v.url);
                 v.thumb = v.id ? `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg` : null;
                 if (!v.playlist || v.playlist === 'NA') v.playlist = null;
+                if (v.playlist) playlistSet.add(v.playlist);
             });
+            uniquePlaylists = Array.from(playlistSet).sort();
 
             loadingArea.classList.add('hidden');
             searchInput.disabled = false;
+            playlistInput.disabled = false;
+            
             displayVideos(videoData);
 
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
             loadingArea.innerHTML = "<p style='color:red'>リストの取得に失敗しました。</p>";
         }
     }
@@ -350,136 +294,165 @@
     function displayVideos(videos) {
         videoGrid.innerHTML = '';
         statusBar.textContent = `全 ${videoData.length} 件中 ${videos.length} 件を表示`;
-
-        if (videos.length === 0) {
-            noResult.classList.remove('hidden');
-            return;
-        }
-        noResult.classList.add('hidden');
+        
+        document.getElementById('noResult').classList.toggle('hidden', videos.length > 0);
+        if (videos.length === 0) return;
 
         const fragment = document.createDocumentFragment();
         videos.forEach(video => {
-            const a = document.createElement('a');
-            a.className = 'video-card';
-            a.href = video.url;
-            a.target = "_blank";
-            a.rel = "noopener noreferrer";
-            a.onclick = () => saveHistory(searchInput.value.trim());
+            const div = document.createElement('div');
+            div.className = 'video-card';
+            div.onclick = () => openDetail(video); 
 
-            const thumbSrc = video.thumb ? video.thumb : 'data:image/svg+xml;charset=UTF-8,%3Csvg...%3E';
-            const playlistBadge = video.playlist 
-                ? `<div class="playlist-badge">📂 ${video.playlist}</div>` 
-                : '';
+            const thumbSrc = video.thumb ? video.thumb : 'data:image/svg+xml,...';
+            const playlistBadge = video.playlist ? `<div class="playlist-badge">📂 ${video.playlist}</div>` : '';
 
-            a.innerHTML = `
+            div.innerHTML = `
                 <div class="thumbnail-wrapper">
                     <img src="${thumbSrc}" alt="${video.title}" class="thumbnail-img" loading="lazy">
                 </div>
                 <div class="info">
                     <div class="title">${video.title}</div>
                     ${playlistBadge}
-                    <div class="url-text">YouTubeで見る ↗</div>
+                    <div class="url-text">詳細を見る →</div>
                 </div>
             `;
-            fragment.appendChild(a);
+            fragment.appendChild(div);
         });
         videoGrid.appendChild(fragment);
     }
 
-    function updateSuggestions(inputText) {
-        const cleanInput = inputText.trim().toLowerCase();
-        suggestionsBox.innerHTML = '';
-        let hasContent = false;
+    function openDetail(video) {
+        detailTitle.textContent = video.title;
+        detailUrl.href = video.url;
+        detailUrl.textContent = video.url;
+        detailPlaylistName.textContent = video.playlist || "なし";
         
-        const history = getHistory();
-        if (cleanInput === '') {
-            history.forEach(h => {
-                const div = document.createElement('div');
-                div.className = 'suggestion-item history-label';
-                div.innerHTML = `<span class="icon">🕒</span> ${h} <span class="delete-history" title="履歴から削除">×</span>`;
-                div.querySelector('.delete-history').onclick = (e) => deleteHistory(h, e);
-                div.onclick = (e) => {
-                    if (e.target.classList.contains('delete-history')) return;
-                    searchInput.value = h;
-                    filterVideos(h);
-                    suggestionsBox.style.display = 'none';
-                };
-                suggestionsBox.appendChild(div);
-                hasContent = true;
-            });
+        if (video.id) {
+            detailEmbed.innerHTML = `<iframe src="https://www.youtube.com/embed/${video.id}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        } else {
+            detailEmbed.innerHTML = '<p style="color:#fff; text-align:center; padding-top:20%;">動画を読み込めません</p>';
         }
 
-        if (cleanInput !== '') {
-            const keywords = cleanInput.split(/[\s　]+/).filter(k => k !== '');
-            
-            const allMatches = videoData.filter(v => {
-                const title = v.title.toLowerCase();
-                return keywords.every(word => title.includes(word));
-            });
-
-            const displayMatches = allMatches.slice(0, MAX_SUGGESTIONS);
-
-            displayMatches.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'suggestion-item';
-                div.innerHTML = `<span class="icon">🔍</span> ${m.title}`;
-                div.onclick = () => {
-                    searchInput.value = m.title;
-                    saveHistory(m.title);
-                    filterVideos(m.title);
-                    suggestionsBox.style.display = 'none';
-                };
-                suggestionsBox.appendChild(div);
-                hasContent = true;
-            });
-
-            if (allMatches.length > MAX_SUGGESTIONS) {
-                const remaining = allMatches.length - MAX_SUGGESTIONS;
-                const div = document.createElement('div');
-                div.className = 'suggestion-item etc-item';
-                div.innerHTML = `...他 ${remaining} 件（ここをクリックして全件表示）`;
-                
-                div.onclick = () => {
-                    filterVideos(cleanInput);
-                    suggestionsBox.style.display = 'none';
-                    searchInput.blur();
-                };
-                suggestionsBox.appendChild(div);
-            }
+        if (video.playlist) {
+            filterByPlaylistBtn.style.display = 'inline-block';
+            filterByPlaylistBtn.onclick = () => {
+                closeDetail();
+                playlistInput.value = video.playlist;
+                searchInput.value = '';
+                applyFilters(); 
+            };
+        } else {
+            filterByPlaylistBtn.style.display = 'none';
         }
 
-        suggestionsBox.style.display = hasContent ? 'block' : 'none';
+        mainView.style.display = 'none';
+        detailPage.style.display = 'flex';
+        window.scrollTo(0, 0);
     }
 
-    function filterVideos(text) {
-        const keywords = text.toLowerCase().split(/[\s　]+/).filter(k => k !== '');
+    function closeDetail() {
+        detailEmbed.innerHTML = ''; 
+        detailPage.style.display = 'none';
+        mainView.style.display = 'block';
+    }
+
+    function applyFilters() {
+        const titleKey = searchInput.value.toLowerCase().trim();
+        const playlistKey = playlistInput.value.toLowerCase().trim();
+        const titleWords = titleKey.split(/[\s　]+/).filter(k => k !== '');
+
+        const filtered = videoData.filter(v => {
+            const titleMatch = titleWords.every(w => v.title.toLowerCase().includes(w));
+            const playlistMatch = playlistKey === '' || (v.playlist && v.playlist.toLowerCase().includes(playlistKey));
+            return titleMatch && playlistMatch;
+        });
+
+        displayVideos(filtered);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (keywords.length === 0) {
-            displayVideos(videoData);
+    }
+
+    function updatePlaylistSuggestions(val) {
+        const cleanVal = val.toLowerCase().trim();
+        playlistSuggestionsBox.innerHTML = '';
+        
+        let matches = uniquePlaylists;
+        if (cleanVal !== '') {
+            matches = uniquePlaylists.filter(p => p.toLowerCase().includes(cleanVal));
+        }
+
+        if (matches.length === 0) {
+            playlistSuggestionsBox.style.display = 'none';
             return;
         }
-        const filtered = videoData.filter(video => {
-            const title = video.title.toLowerCase();
-            return keywords.every(word => title.includes(word));
+
+        matches.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `<span class="icon">📂</span> ${p}`;
+            div.onclick = () => {
+                playlistInput.value = p;
+                playlistSuggestionsBox.style.display = 'none';
+                applyFilters();
+            };
+            playlistSuggestionsBox.appendChild(div);
         });
-        displayVideos(filtered);
+        playlistSuggestionsBox.style.display = 'block';
     }
 
-    searchInput.addEventListener('input', function() {
-        filterVideos(this.value);
-        updateSuggestions(this.value);
+
+    function updateTitleSuggestions(val) {
+        const cleanVal = val.trim().toLowerCase();
+        suggestionsBox.innerHTML = '';
+        if (cleanVal === '') return; 
+
+        const keywords = cleanVal.split(/[\s　]+/).filter(k => k !== '');
+        const matches = videoData.filter(v => keywords.every(w => v.title.toLowerCase().includes(w)));
+        
+        const displayMatches = matches.slice(0, 50);
+        displayMatches.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `<span class="icon">🔍</span> ${m.title}`;
+            div.onclick = () => {
+                searchInput.value = m.title;
+                suggestionsBox.style.display = 'none';
+                applyFilters();
+            };
+            suggestionsBox.appendChild(div);
+        });
+
+        if (matches.length > 50) {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item etc-item';
+            div.innerHTML = `...他 ${matches.length - 50} 件`;
+            div.onclick = () => {
+                applyFilters();
+                suggestionsBox.style.display = 'none';
+            };
+            suggestionsBox.appendChild(div);
+        }
+        suggestionsBox.style.display = displayMatches.length ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', () => {
+        applyFilters();
+        updateTitleSuggestions(searchInput.value);
     });
-    searchInput.addEventListener('focus', function() { updateSuggestions(this.value); });
-    document.addEventListener('click', function(e) {
+
+    playlistInput.addEventListener('focus', () => updatePlaylistSuggestions(playlistInput.value));
+    playlistInput.addEventListener('click', () => updatePlaylistSuggestions(playlistInput.value));
+    playlistInput.addEventListener('input', () => {
+        applyFilters();
+        updatePlaylistSuggestions(playlistInput.value);
+    });
+
+    document.addEventListener('click', e => {
         if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
             suggestionsBox.style.display = 'none';
         }
-    });
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            saveHistory(this.value);
-            suggestionsBox.style.display = 'none';
-            searchInput.blur();
+        if (!playlistInput.contains(e.target) && !playlistSuggestionsBox.contains(e.target)) {
+            playlistSuggestionsBox.style.display = 'none';
         }
     });
 
