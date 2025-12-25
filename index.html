@@ -22,7 +22,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0; padding: 0;
-            overscroll-behavior-y: none; 
+            overscroll-behavior-y: none;
         }
 
         .hidden { display: none !important; }
@@ -73,10 +73,13 @@
             display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
+
         .video-card {
             background: var(--card-bg); border-radius: 12px; overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
             cursor: pointer; display: flex; flex-direction: column;
+            content-visibility: auto; /* 描画パフォーマンス向上 */
+            contain-intrinsic-size: 300px;
         }
         .video-card:hover { transform: translateY(-4px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .thumbnail-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #eee; }
@@ -111,23 +114,18 @@
         .back-icon { width: 24px; height: 24px; fill: currentColor; }
 
         .detail-content { max-width: 900px; width: 100%; margin: 0 auto; padding: 20px; box-sizing: border-box; }
-        
         .video-container {
             position: relative; width: 100%; padding-top: 56.25%; background: #000; margin-bottom: 15px; border-radius: 12px; overflow: hidden;
         }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        
         .detail-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; line-height: 1.4; }
 
-        .action-bar {
-            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
-        }
+        .action-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .action-btn {
             display: flex; align-items: center; gap: 6px;
             background-color: var(--btn-bg); color: #333;
             border: none; padding: 8px 16px; border-radius: 20px;
-            cursor: pointer; font-size: 0.9rem; font-weight: 500;
-            transition: 0.2s;
+            cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: 0.2s;
         }
         .action-btn:hover { background-color: #e0e0e0; }
         .action-btn svg { width: 18px; height: 18px; fill: currentColor; }
@@ -158,6 +156,8 @@
             animation: spin 1s linear infinite; margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #scrollSentinel { height: 50px; width: 100%; }
     </style>
 </head>
 <body>
@@ -167,7 +167,6 @@
     <h2>システムメンテナンス中</h2>
     <p>毎日 0:00 〜 0:20 の間はご利用いただけません。</p>
 </div>
-
 <div id="copyToast">URLをコピーしました</div>
 
 <div id="mainView">
@@ -175,11 +174,11 @@
         <h1>スポチャン動画検索</h1>
         <div class="search-container">
             <div class="input-wrapper">
-                <input type="text" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off">
+                <input type="text" id="searchInput" placeholder="動画タイトルを検索..." disabled autocomplete="off" name="search_q_uniq">
                 <div id="suggestionsBox" class="suggestions-box"></div>
             </div>
             <div class="input-wrapper">
-                <input type="text" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off">
+                <input type="text" id="playlistSearchInput" placeholder="プレイリストで絞り込み..." disabled autocomplete="off" name="search_p_uniq">
                 <div id="playlistSuggestionsBox" class="suggestions-box"></div>
             </div>
         </div>
@@ -193,6 +192,8 @@
     </div>
 
     <div class="video-grid" id="videoGrid"></div>
+    <div id="scrollSentinel"></div>
+    
     <p class="no-result hidden" id="noResult">条件に一致する動画が見つかりませんでした。</p>
 </div>
 
@@ -214,7 +215,6 @@
                 <svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
                 このリストで絞り込み
             </button>
-            
             <button onclick="copyVideoUrl()" class="action-btn">
                 <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                 URLをコピー
@@ -230,7 +230,7 @@
                 <span class="label">再生リスト:</span>
                 <span class="value" id="detailPlaylistContainer"></span>
             </div>
-            </div>
+        </div>
     </div>
 </div>
 
@@ -238,9 +238,6 @@
     const LIST_URL = "https://raw.githubusercontent.com/mokumokukairo/my-video-list/main/list.txt";
 
     document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-        if (e.key === 'F12' || (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) e.preventDefault();
-    });
 
     function checkMaintenance() {
         const now = new Date();
@@ -260,7 +257,8 @@
     const videoGrid = document.getElementById('videoGrid');
     const loadingArea = document.getElementById('loadingArea');
     const statusBar = document.getElementById('statusBar');
-    
+    const scrollSentinel = document.getElementById('scrollSentinel');
+
     const detailPage = document.getElementById('detailPage');
     const mainView = document.getElementById('mainView');
     const detailEmbed = document.getElementById('detailEmbed');
@@ -270,12 +268,21 @@
     const filterByPlaylistBtn = document.getElementById('filterByPlaylistBtn');
     const copyToast = document.getElementById('copyToast');
 
-    let videoData = [];
+    let allVideoData = [];
+    let currentFilteredData = []; 
     let uniquePlaylists = [];
+    let displayedCount = 0; 
+    const BATCH_SIZE = 40; 
+
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadMoreVideos();
+        }
+    }, { rootMargin: '200px' });
 
     window.addEventListener('popstate', (event) => {
         if (detailPage.style.display === 'flex') {
-            closeDetail(false); 
+            closeDetail(false);
         }
     });
 
@@ -289,10 +296,10 @@
             const response = await fetch(LIST_URL + '?t=' + Date.now());
             if (!response.ok) throw new Error();
             const text = await response.text();
-            videoData = new Function("return [" + text + "]")();
+            allVideoData = new Function("return [" + text + "]")();
             
             const playlistSet = new Set();
-            videoData.forEach(v => {
+            allVideoData.forEach(v => {
                 v.id = getYouTubeID(v.url);
                 v.thumb = v.id ? `https://i.ytimg.com/vi/${v.id}/mqdefault.jpg` : null;
                 if (!v.playlist || v.playlist === 'NA') v.playlist = null;
@@ -303,20 +310,36 @@
             loadingArea.classList.add('hidden');
             searchInput.disabled = false;
             playlistInput.disabled = false;
-            displayVideos(videoData);
+
+            applyFilters(true); 
         } catch (e) {
             loadingArea.innerHTML = "<p style='color:red'>リストの取得に失敗しました。</p>";
         }
     }
 
-    function displayVideos(videos) {
-        videoGrid.innerHTML = '';
-        statusBar.textContent = `全 ${videoData.length} 件中 ${videos.length} 件を表示`;
-        document.getElementById('noResult').classList.toggle('hidden', videos.length > 0);
-        if (videos.length === 0) return;
+    function renderVideoList(videos, reset = false) {
+        if (reset) {
+            videoGrid.innerHTML = '';
+            displayedCount = 0;
+            currentFilteredData = videos;
+            window.scrollTo(0, 0);
+            observer.disconnect(); 
+        }
+
+        const total = currentFilteredData.length;
+        const nextLimit = Math.min(displayedCount + BATCH_SIZE, total);
+        const videosToRender = currentFilteredData.slice(displayedCount, nextLimit);
+
+        if (videosToRender.length === 0 && displayedCount === 0) {
+            document.getElementById('noResult').classList.remove('hidden');
+            statusBar.textContent = `0 件`;
+            return;
+        } else {
+            document.getElementById('noResult').classList.add('hidden');
+        }
 
         const fragment = document.createDocumentFragment();
-        videos.forEach(video => {
+        videosToRender.forEach(video => {
             const div = document.createElement('div');
             div.className = 'video-card';
             div.onclick = () => openDetail(video);
@@ -336,16 +359,47 @@
             `;
             fragment.appendChild(div);
         });
+
         videoGrid.appendChild(fragment);
+        displayedCount = nextLimit;
+        statusBar.textContent = `全 ${allVideoData.length} 件中 ${total} 件 (表示中: ${displayedCount})`;
+
+        if (displayedCount < total) {
+            observer.observe(scrollSentinel);
+        } else {
+            observer.disconnect();
+        }
+    }
+
+    function loadMoreVideos() {
+        renderVideoList([], false);
+    }
+
+    let debounceTimer;
+    function triggerFilter() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => applyFilters(), 300); 
+    }
+
+    function applyFilters(immediate = false) {
+        const titleKey = searchInput.value.toLowerCase().trim();
+        const playlistKey = playlistInput.value.toLowerCase().trim();
+        const titleWords = titleKey.split(/[\s　]+/).filter(k => k !== '');
+
+        const filtered = allVideoData.filter(v => {
+            const titleMatch = titleWords.every(w => v.title.toLowerCase().includes(w));
+            const playlistMatch = playlistKey === '' || (v.playlist && v.playlist.toLowerCase().includes(playlistKey));
+            return titleMatch && playlistMatch;
+        });
+
+        renderVideoList(filtered, true); 
     }
 
     function openDetail(video) {
         history.pushState({ page: 'detail' }, '', '#detail');
-
         detailTitle.textContent = video.title;
         detailUrl.href = video.url;
         detailUrl.textContent = video.url;
-
 
         if (video.playlist) {
             let html = `<span>${video.playlist}</span>`;
@@ -353,13 +407,12 @@
                 html += ` <a href="${video.playlistUrl}" target="_blank" class="ext-link">YouTubeで開く ↗</a>`;
             }
             detailPlaylistContainer.innerHTML = html;
-            
             filterByPlaylistBtn.style.display = 'flex';
             filterByPlaylistBtn.onclick = () => {
-                goBack(); 
+                goBack();
                 playlistInput.value = video.playlist;
                 searchInput.value = '';
-                applyFilters();
+                applyFilters(true);
             };
         } else {
             detailPlaylistContainer.textContent = "なし";
@@ -378,37 +431,44 @@
     }
 
     function goBack() {
-        history.back(); 
+        history.back();
     }
 
     function closeDetail(shouldBackHistory = true) {
-        detailEmbed.innerHTML = ''; 
+        detailEmbed.innerHTML = '';
         detailPage.style.display = 'none';
         mainView.style.display = 'block';
-        
     }
 
     function copyVideoUrl() {
-        const url = detailUrl.href;
-        navigator.clipboard.writeText(url).then(() => {
+        navigator.clipboard.writeText(detailUrl.href).then(() => {
             copyToast.classList.add('show');
             setTimeout(() => copyToast.classList.remove('show'), 2000);
         });
     }
 
-    function applyFilters() {
-        const titleKey = searchInput.value.toLowerCase().trim();
-        const playlistKey = playlistInput.value.toLowerCase().trim();
-        const titleWords = titleKey.split(/[\s　]+/).filter(k => k !== '');
+    function updateTitleSuggestions(val) {
+        const cleanVal = val.trim().toLowerCase();
+        suggestionsBox.innerHTML = '';
+        if (cleanVal === '') return;
 
-        const filtered = videoData.filter(v => {
-            const titleMatch = titleWords.every(w => v.title.toLowerCase().includes(w));
-            const playlistMatch = playlistKey === '' || (v.playlist && v.playlist.toLowerCase().includes(playlistKey));
-            return titleMatch && playlistMatch;
+        const keywords = cleanVal.split(/[\s　]+/).filter(k => k !== '');
+        const matches = allVideoData.filter(v => keywords.every(w => v.title.toLowerCase().includes(w)));
+        
+        const displayMatches = matches.slice(0, 10); 
+        
+        displayMatches.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `<span class="icon">🔍</span> ${m.title}`;
+            div.onclick = () => {
+                searchInput.value = m.title;
+                suggestionsBox.style.display = 'none';
+                applyFilters(true);
+            };
+            suggestionsBox.appendChild(div);
         });
-
-        displayVideos(filtered);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        suggestionsBox.style.display = displayMatches.length ? 'block' : 'none';
     }
 
     function updatePlaylistSuggestions(val) {
@@ -431,57 +491,39 @@
             div.onclick = () => {
                 playlistInput.value = p;
                 playlistSuggestionsBox.style.display = 'none';
-                applyFilters();
+                applyFilters(true);
             };
             playlistSuggestionsBox.appendChild(div);
         });
         playlistSuggestionsBox.style.display = 'block';
     }
 
-    function updateTitleSuggestions(val) {
-        const cleanVal = val.trim().toLowerCase();
-        suggestionsBox.innerHTML = '';
-        if (cleanVal === '') return;
-
-        const keywords = cleanVal.split(/[\s　]+/).filter(k => k !== '');
-        const matches = videoData.filter(v => keywords.every(w => v.title.toLowerCase().includes(w)));
-        
-        const displayMatches = matches.slice(0, 50);
-        displayMatches.forEach(m => {
-            const div = document.createElement('div');
-            div.className = 'suggestion-item';
-            div.innerHTML = `<span class="icon">🔍</span> ${m.title}`;
-            div.onclick = () => {
-                searchInput.value = m.title;
-                suggestionsBox.style.display = 'none';
-                applyFilters();
-            };
-            suggestionsBox.appendChild(div);
-        });
-
-        if (matches.length > 50) {
-            const div = document.createElement('div');
-            div.className = 'suggestion-item etc-item';
-            div.innerHTML = `...他 ${matches.length - 50} 件`;
-            div.onclick = () => {
-                applyFilters();
-                suggestionsBox.style.display = 'none';
-            };
-            suggestionsBox.appendChild(div);
-        }
-        suggestionsBox.style.display = displayMatches.length ? 'block' : 'none';
-    }
-
     searchInput.addEventListener('input', () => {
-        applyFilters();
+        triggerFilter();
         updateTitleSuggestions(searchInput.value);
+    });
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            suggestionsBox.style.display = 'none'; 
+            searchInput.blur(); 
+            applyFilters(true); 
+        }
     });
 
     playlistInput.addEventListener('focus', () => updatePlaylistSuggestions(playlistInput.value));
     playlistInput.addEventListener('click', () => updatePlaylistSuggestions(playlistInput.value));
     playlistInput.addEventListener('input', () => {
-        applyFilters();
+        triggerFilter();
         updatePlaylistSuggestions(playlistInput.value);
+    });
+    playlistInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            playlistSuggestionsBox.style.display = 'none';
+            playlistInput.blur();
+            applyFilters(true);
+        }
     });
 
     document.addEventListener('click', e => {
